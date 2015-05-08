@@ -1,37 +1,37 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
-import sae.const
+# import sae.const
 
-MYSQL_DB = sae.const.MYSQL_DB
-MYSQL_USER = sae.const.MYSQL_USER
-MYSQL_PASS = sae.const.MYSQL_PASS
-MYSQL_HOST_M = sae.const.MYSQL_HOST
-MYSQL_HOST_S = sae.const.MYSQL_HOST_S
-MYSQL_PORT = sae.const.MYSQL_PORT
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': MYSQL_DB,                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': MYSQL_USER,
-        'PASSWORD': MYSQL_PASS,
-        'HOST': MYSQL_HOST_M,                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': MYSQL_PORT,                      # Set to empty string for default.
-    }
-}
+# MYSQL_DB = sae.const.MYSQL_DB
+# MYSQL_USER = sae.const.MYSQL_USER
+# MYSQL_PASS = sae.const.MYSQL_PASS
+# MYSQL_HOST_M = sae.const.MYSQL_HOST
+# MYSQL_HOST_S = sae.const.MYSQL_HOST_S
+# MYSQL_PORT = sae.const.MYSQL_PORT
 
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-#         'NAME': 'article',                      # Or path to database file if using sqlite3.
-#         'USER': 'root',
-#         'PASSWORD': 'root',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
+#         'NAME': MYSQL_DB,                      # Or path to database file if using sqlite3.
+#         # The following settings are not used with sqlite3:
+#         'USER': MYSQL_USER,
+#         'PASSWORD': MYSQL_PASS,
+#         'HOST': MYSQL_HOST_M,                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+#         'PORT': MYSQL_PORT,                      # Set to empty string for default.
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'article',                      # Or path to database file if using sqlite3.
+        'USER': 'root',
+        'PASSWORD': 'nicolas.lshuang',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
