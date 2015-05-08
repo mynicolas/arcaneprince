@@ -1,0 +1,100 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-dialog/paper-dialog-transition.html">
+<link rel="import" href="../paper-dialog/paper-dialog-base.html">
+<link rel="import" href="../core-media-query/core-media-query.html">
+
+
+<polymer-element name="arcane-login" extends="paper-dialog-base" role="dialog" layout vertical>
+
+<template>
+
+  <style>
+    :host {
+      background: #fff;
+      color: rgba(0, 0, 0, 0.87);
+      margin: 32px;
+      overflow: hidden;
+      width: 370px;
+    }
+    h1 {
+      font-size: 20px;
+      padding: 0 10px;
+      color: #000;
+    }
+    #scroller {
+      overflow: hidden;
+      height: auto;
+      min-height: 300px;
+      max-height: 640px;
+      max-width: 1000px;
+      box-sizing: border-box;
+      padding: 20px;
+    }
+    paper-button { 
+      font-weight: bold;
+      text-transform: none;
+      color: rgb(46, 192, 165);
+    }
+    paper-button::shadow paper-ripple {
+      color: rgb(46, 192, 165);
+    }
+  </style>
+
+  <core-media-query query="max-width: 640px" queryMatches="{{ _isNarrow }}"></core-media-query>  
+  <paper-shadow z="10" fit></paper-shadow>
+
+  <div id="scroller" relative flex auto>
+    <section id="header" horizontal layout center>
+      <span flex><h1>登陆</h1></span>
+    </section>
+
+    <section id="container" relative vertical layout center>
+      <p>
+        <paper-input id="username" label="管理员帐号" floatinglabel value="{{ username }}"></paper-input>
+      </p>
+      <p>
+        <paper-input id="password" type="password" label="管理员密码" floatinglabel value="{{ password }}"></paper-input>
+      </p>
+    </section>
+
+    <form id="loginForm" action="/login/" method="POST" hidden>
+      <input name="username" value="{{ username }}"/>
+      <input name="password" value="{{ password }}"/>
+    </form>
+
+    <div id="actions" relative layout horizontal justified>
+      <paper-button id="login" raised on-tap="{{ login }}" affirmative>登录</paper-button>
+      <paper-button id="cancel" raised on-tap="{{ close }}">取消</paper-button>
+    </div>
+  </div>
+
+</template>
+
+<script>
+
+  Polymer({
+    _isNarrow: false,
+    _isNarrowChanged: function () {
+      if(this._isNarrow){
+        this.style.width = "100%";
+      }else{
+        this.style.width = "370px";
+      }
+    },
+    username: "",
+    password: "",
+    autoCloseDisabled: true,
+    backdrop: true,
+    transition: "paper-dialog-transition-bottom",
+    login: function(e){
+      if(this.username && this.password){
+        this.$.loginForm.submit();
+      }
+    }
+
+  });
+
+  </script>
+</polymer-element>

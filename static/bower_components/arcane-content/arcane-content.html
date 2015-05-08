@@ -1,0 +1,29 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<polymer-element name="arcane-content" attributes="content">
+  <template>
+    <link rel="stylesheet" href="../../pygmentStyle/friendly.css">
+    <style>
+      #container {
+        font-size: 1.2em;
+      }
+    </style>
+    <section id="container" flex></section>
+  </template>
+  <script>
+  Polymer({
+    created: function(){
+      this.content = [];
+    },
+    ready: function(){
+      this.details = JSON.parse(this.content);
+      content = JSON.parse(this.content);
+      for(var i=0; i<content.length; i++){
+        var div = document.createElement('div');
+        div.innerHTML = content[i].detail;
+        this.$.container.appendChild(div);
+      }
+    }
+  });
+  </script>
+</polymer-element>

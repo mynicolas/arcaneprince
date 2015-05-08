@@ -1,0 +1,33 @@
+{
+  "name": "arcaneprince",
+  "version": "1",
+  "authors": [
+    "company <nicolas.lshuang@gmail.com>"
+  ],
+  "moduleType": [
+    "es6"
+  ],
+  "keywords": [
+    "polymer"
+  ],
+  "license": "MIT",
+  "homepage": "arcaneprince.sinaapp.com",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "polymer/polymer#~0.5.4",
+    "core-drawer-panel": "Polymer/core-drawer-panel#~0.5.4",
+    "core-toolbar": "polymer/core-toolbar#~0.5.4",
+    "paper-toast": "polymer/paper-toast#~0.5.4",
+    "paper-button": "polymer/paper-button#~0.5.4",
+    "core-style": "polymer/core-style#~0.5.5",
+    "paper-dropdown": "polymer/paper-dropdown#~0.5.5",
+    "paper-menu-button": "polymer/paper-menu-button#~0.5.5"
+  }
+}

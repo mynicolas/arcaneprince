@@ -1,0 +1,32 @@
+<x-meta id="arcane-catagory" label="Catagory" group="Arcane">
+	<template>
+		<arcane-catagory catagories='[
+  {
+    "catagoryName": "catagory1",
+    "articles": [
+            {
+              "articleName": "article1",
+              "articleId": "id1"
+            },
+            {
+              "articleName": "article2",
+              "articleId": "id2"
+            }
+          ]
+  },
+  {
+    "catagoryName": "catagory2",
+    "articles": [
+            {
+              "articleName": "article3",
+              "articleId": "id3"
+            }
+          ]
+  }
+]'></arcane-catagory>
+	</template>
+	<property name="catagories" kind="json"></property>
+	<template id="imports">
+		<link rel="import" href="arcane-catagory.html">	
+	</template>
+</x-meta>

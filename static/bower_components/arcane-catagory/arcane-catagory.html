@@ -1,0 +1,79 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-menu/core-submenu.html">
+<link rel="import" href="../core-icons/core-icons.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../core-ajax/core-ajax.html">
+
+<polymer-element name="arcane-catagory" attributes="current articleId catagoryUrl" style="display:block">
+
+  <template>
+    <style>    
+      :host {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+      #core_menu {
+        font-size: 16px;
+        left: 0px;
+        top: 0px;
+        position: absolute;
+        width: 98%;
+        margin: 10px 0 0 2%;
+      }
+      #core_ajax {
+        left: -12px;
+        top: -12px;
+        position: absolute;
+      }
+      .core_submenu::shadow #submenu {
+        margin: 0;
+      }
+      paper-item::shadow paper-ripple,
+      core-submenu::shadow core-item::shadow core-icon {
+        color: #2EC0A5;
+      }
+      core-submenu::shadow core-item::shadow div#label {
+        font-size: 15px;
+        color: #2EC0A5;
+      }
+    </style>
+      <core-ajax id="catagory_ajax" handleAs="json" method="GET" hidden url="{{ catagoryUrl }}" response="{{ catagories }}"></core-ajax>
+      <core-menu selectedindex="0" id="core_menu">
+		  	<template repeat="{{ catagory in catagories }}">
+	          <core-submenu class="core_submenu" on-tap="{{ setCurrent }}" icon="list" label="{{ catagory.name }}" vertical layout>
+	            <template repeat="{{ article in catagory.articles }}">
+	              <div hidden>{{ article.articleId }}</div>
+	              <paper-item class="paper_item" on-tap="{{ setId }}">{{ article.title }}</paper-item>
+	            </template>
+	          </core-submenu>
+		  	</template>
+      </core-menu>
+  </template>
+  <script>
+
+    Polymer("arcane-catagory", {
+      current: "",
+      ready: function(){
+        this.$.catagory_ajax.go();
+      },
+      created: function(){
+        this.catagories = [];
+      },
+      publish: {
+        articleId: "",
+        catagoryUrl: ""
+      },
+      setId: function(e){
+        this.articleId = e.target.templateInstance.model.article.articleId;
+        this.fire("article-selected", {'articleId': this.articleId});
+      },
+      setCurrent: function(e){
+        this.current = e.target.templateInstance.model.catagory.name;
+      }
+    });
+
+  </script>
+
+</polymer-element>

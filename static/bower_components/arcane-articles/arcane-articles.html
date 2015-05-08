@@ -1,0 +1,300 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-ripple/paper-ripple.html">
+<link rel="import" href="../core-icons/core-icons.html">
+<link rel="import" href="../core-icon/core-icon.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../arcane-dialog/arcane-dialog.html">
+<link rel="import" href="../paper-toast/paper-toast.html">
+<link rel="import" href="../arcane-content/arcane-content.html">
+
+<polymer-element name="arcane-articles" attributes="articleId articleUrl search isNarrow">
+
+  <template>
+    <style>    
+      :host {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+      arcane-articles div {
+        position: relative;
+        font-size: 14px;
+      }
+      .separator {
+        width: 100%;
+        height: 6px;
+      }
+      .separator_large {
+        width: 100%;
+        height: 2px;
+        margin-top: 2px;
+        background-color: rgb(255, 255, 255);
+      }
+      .separator_small {
+        width: 100%;
+        height: 1px;
+        margin-top: 2px;
+        background-color: rgb(255, 255, 255);
+      }
+      #container {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        font-size: 14px;
+        background-color: rgb(242, 242, 242);
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .article_body {
+        width: 100%;
+        height: auto;
+        padding-bottom: 10px;
+        position: relative;
+      }
+      .paper_ripple {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+      }
+      .article_header {
+        padding: 10px 5% 0px;
+      }
+      .article_header::after {
+        display: block;
+        height: 0px;
+        clear: both;
+        content: '';
+      }
+      .article_catagory {
+        float: left;
+      }
+      .article_date {
+        float: right;
+      }
+      .article_title_div {
+        padding-top: 15px;
+      }
+      h1 {
+        width: 100%;
+        text-align: center;
+      }
+      .article_content, .comment {
+        margin: 10px 5%;
+      }
+      .comment_separator {
+        width: 100%;
+        height: 1px;
+        margin-top: 2px;
+        background-color: rgb(46, 192, 165);
+      }
+      .account_box, .send {
+        color: rgb(46, 192, 165);
+      }
+      .comment_body {
+        border-left-width: 1px;
+        border-left-style: solid;
+        border-left-color: rgb(46, 192, 165);
+        border-right-width: 1px;
+        border-right-style: solid;
+        border-right-color: rgb(46, 192, 165);
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: rgb(46, 192, 165);
+      }
+      .comment_content, .comment_reply_content {
+        padding: 10px 10px 10px 23px;
+      }
+      .paper_ripple, .article_header, .comment_header, .comment_reply_header, .add_comment_button {
+        color: rgb(46, 192, 165);
+      }
+	    #toast {
+		    background: rgb(46, 192, 165);
+		    right: 0px;
+        left: auto;
+		    top: 80px;
+		    bottom: auto;
+	    }
+      .search {
+        width: 300px;
+      }
+    </style>
+    <core-ajax handleAs="json" method="GET" hidden auto url="{{ articleUrl }}{{ articleId }}/" response="{{ articles }}"></core-ajax>
+    <core-ajax id="commentAndReplySaveAjax" handleAs="json" method="GET" hidden url="{{ commentReplyUrl }}" response="{{ _isSaved }}"></core-ajax>
+	  <arcane-dialog id="arcane_dialog" on-dialog-affirm="{{ getNewContent }}"></arcane-dialog>
+	  <paper-toast id="toast" text="{{ _isSaved }}"></paper-toast>
+    <section id="container">
+      <template if="{{ !search.length }}">
+        <template if="{{ articles }}">
+          <div id="articles">
+    	      <template repeat="{{ article in articles }}">
+    	        <div id="{{ article.articleId }}" class="article">
+    	          <div class="separator">
+    		          <div class="separator_large"></div>
+    		          <div class="separator_small"></div>
+    		        </div>
+    	          <div class="article_header">
+    	            <div class="article_catagory"><span>{{ article.catagory }}</span><span> >>> </span><span>{{ article.title }}</span></div>
+    	            <div class="article_date">{{ article.datetime }}</div>
+    	          </div>
+    	          <div class="article_body">
+    	            <div class="article_title_div">
+    	              <h1 id="h1">{{ article.title }}</h1>
+    	            </div>
+                  <arcane-content class="article_content" horizontal layout content="{{ article.content }}"></arcane-content>
+    	            <paper-ripple class="paper_ripple" id="comment_{{ article.title }}{{ article.articleId }}" on-tap="{{ commentToggle }}" style="cursor: pointer;" fit></paper-ripple>
+    	          </div>
+    	          <div class="comments">
+    		          <template repeat="{{ comment in article.comments }}">
+    		            <div class="comment" id="{{ comment.commentId }}">
+    		              <div class="comment_header" horizontal layout center>
+    		                <core-icon icon="account-box" class="account_box"></core-icon>
+    		                <div class="comment_nick" one flex><span>{{ comment.nick }}</span><span><core-icon class="send" icon="send"></core-icon></span></div>
+    		                <div class="comment_datetime" one flex>{{ comment.datetime }}</div>
+    		                <paper-button id="comment_{{ comment.nick }}{{ comment.commentId }}"  on-tap="{{ replyToggle }}">插嘴</paper-button>
+    		              </div>
+    		              <div class="comment_separator"></div>
+    		              <div class="comment_body">
+    		                <div class="comment_content">{{ comment.content }}</div>
+    		                <div class="comment_replies">
+    			                <template repeat="{{ reply in comment.replies }}">
+    			                  <div class="comment_reply" id="{{ reply.replyId }}">
+    			                    <div class="comment_reply_header" horizontal layout center>
+    			                      <core-icon icon="account-box" class="account_box"></core-icon>
+    			                      <div class="comment_reply_header_nick" one flex><span>{{ reply.nick }}</span><span><core-icon class="send" icon="send"></core-icon></span><span>{{ reply.owner }}</span></span></div>
+    			                      <div class="comment_reply_header_datetime" one flex>{{ reply.datetime }}</div>
+    			                      <paper-button id="reply_{{ reply.nick }}{{ comment.commentId }}" on-tap="{{ replyToggle }}">插嘴</paper-button>
+    			                    </div>
+    			                    <div class="comment_reply_content">{{ reply.content }}</div>
+    			                  </div>
+    			                </template>
+    		                </div>
+    		              </div>
+    		            </div>
+    		          </template>
+    	          </div>
+    	        </div>
+    	      </template>
+          </div>
+        </template>
+      </template>
+      <template if="{{ search.length }}">
+        <section horizontal layout wrap>
+          <template repeat="{{ s in search }}">
+            <paper-item class="search" on-tap="{{ closeSearch }}">{{ s.title }}<span hidden>{{ s.articleId }}</span></paper-item>
+          </template>
+        </section>
+      </template>
+    </section>
+  </template>
+
+  <script>
+
+    Polymer({
+      closeSearch: function(e){
+        this.articleId = e.target.templateInstance.model.s.articleId;
+        this.search = null;
+      },
+      created: function () {
+	      this.articles = [];
+        this.search = [];
+      },
+      articleUrl: "",
+	    articleId: "",
+	    commentReplyUrl: "/candr/",
+	    commentToggle: function (e) {
+		    var dialog = this.$.arcane_dialog;
+		    var article = e.target.templateInstance.model.article;
+		    dialog.resourceId = "comment_" + article.articleId;
+		    dialog.heading = article.title;
+		    dialog.toggle();
+	    },
+	    replyToggle: function(e){
+		    var thisType = e.target.id.split('_')[0];
+		    var dialog = this.$.arcane_dialog;
+		    var comment = e.target.templateInstance.model.comment;
+		    dialog.resourceId = "reply_" + comment.commentId;
+		    var reply;
+		    if(thisType == "comment"){
+		      dialog.heading = comment.nick;
+		    }else{
+		      dialog.heading = e.target.templateInstance.model.reply.nick;
+		    }
+		    if(dialog.heading != dialog.nick){
+			    dialog.toggle();
+		    }
+	    },
+	    getNewContent: function (e) {
+		    var valid = e.detail.valid;
+		    if(valid){
+			    var nick = e.detail.nick;
+			    var owner = e.detail.owner;
+			    var email = e.detail.email;
+			    var content = e.detail.content;
+			    var _thisId = e.detail.resourceId;
+
+			    if(content){
+				    var _splitTypeId = this._checkId(_thisId);
+				    var type = _splitTypeId.type;
+				    var id = _splitTypeId.id;
+				    this._setContent(type, id, nick, owner, email, content);
+			    }
+		    }
+	    },
+	    _checkId: function (resourceId) {
+		    var _resourceId = resourceId.split('_');
+		    return {type: _resourceId[0], id: _resourceId[1]};
+	    },
+	    _setContent: function (type, id, nick, owner, email, content) {
+				if(type == "comment"){
+					this._affirmComment(id, nick, email, content);
+				}else if(type == "reply"){
+					this._affirmReply(id, nick, owner, email, content);
+				}
+	    },
+	    _affirmComment: function (id, nick, email, content) {
+		    var thisArticleIndex;
+		    for(var i = 0; i <= this.articles.length - 1; i++){
+			    if(this.articles[i].articleId == id){
+						thisArticleIndex = i;
+				    break;
+			    }
+		    }
+		    this.articles[thisArticleIndex].comments.push({"nick": nick, "content": content});
+		    var ajax = this.$.commentAndReplySaveAjax;
+		    ajax.params = JSON.stringify({"type": "comment", "commentId": id, "nick": nick, "email": email, "content": content});
+		    ajax.go();
+	    },
+	    _affirmReply: function (id, nick, owner, email, content) {
+		    var thisArticleIndex;
+		    var thisCommentIndex;
+		    for(var i=0; i<=this.articles.length-1; i++){
+					var thisComments = this.articles[i].comments;
+			    for(var j=0; j<=thisComments.length-1; j++){
+				    if(thisComments[j].commentId == id){
+					    thisArticleIndex = i;
+							thisCommentIndex = j; 
+					    break;
+				    }
+			    }
+		    }
+		    this.articles[thisArticleIndex].comments[thisCommentIndex].replies.push({"nick": nick, "owner": owner, "content": content});
+		    var ajax = this.$.commentAndReplySaveAjax;
+		    ajax.params = JSON.stringify({"type": "reply", "replyId": id, "nick": nick, "owner": owner, "email": email, "content": content});
+		    ajax.go();
+	    },
+	    _isSavedChanged: function () {
+		    if(this._isSaved){
+					this.$.toast.show();
+		    }
+	    }
+    });
+
+  </script>
+
+</polymer-element>

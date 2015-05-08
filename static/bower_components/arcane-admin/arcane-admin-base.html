@@ -1,0 +1,43 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../core-icon-button/core-icon-button.html">
+
+<polymer-element name="arcane-admin-base" construtor="ArcaneCode" attributes="type value">
+	<template>
+		<style>
+			:host {
+				background: #fff;
+				border: 1px solid #2EC0A5;
+			}
+			paper-input {
+				width: 100%;
+			}
+			#header {
+				background: #2EC0A5;
+			}
+			core-icon-button, #type {
+				color: #fff;
+			}
+			#typeText {
+				padding: 0 20px;
+			}
+		</style>
+		<section id="container" vertical layout>
+			<section id="header" horizontal layout center>
+				<div id="type"><span id="typeText">TYPE:</span><span>{{ type }}</span></div>
+				<div flex></div>
+				<core-icon-button icon="close" on-tap="{{ close }}"></core-icon-button>
+			</section>
+			<paper-input multiline value="{{ value }}"></paper-input>
+		</section>
+	</template>
+	<script>
+		Polymer({
+			type: "",
+			value: "",
+			close: function(){
+				this.remove();
+			}
+		});
+	</script>
+</polymer-element>

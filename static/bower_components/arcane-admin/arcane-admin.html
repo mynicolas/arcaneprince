@@ -1,0 +1,135 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-toast/paper-toast.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../core-ajax/core-ajax.html">
+<link rel="import" href="arcane-text.html">
+<link rel="import" href="arcane-code.html">
+<link rel="import" href="arcane-image.html">
+
+<polymer-element name="arcane-admin" attributes="articleId catagory">
+  <template>
+    <style>
+      #config, #container, #actions {
+        padding: 15px;
+      }
+    </style>
+    <core-ajax
+      id="saveAjax"
+      url="/save/"
+      handleAs="json"
+      method="GET"
+      params="{{ newArticle }}">
+    </core-ajax>
+    <core-ajax
+      id="modifyAjax"
+      url="/article/{{ articleId }}"
+      handleAs="json"
+      method="GET"
+      on-core-response="{{ render }}">
+    </core-ajax>
+    <core-ajax
+      id="deleteArticleAjax"
+      url="/delete/"
+      handleAs="json"
+      method="POST">
+    </core-ajax>
+    <section id="config" vertical layout>
+      <paper-input floatinglabel label="catagory" value="{{ catagory }}"></paper-input>
+      <paper-input floatinglabel label="title" value="{{ articleTitle }}"></paper-input>
+    </section>
+    <section id="container" vertical layout></section>
+    <section id="actions" horizontal layout wrap>
+      <paper-button raised on-tap="{{ addText }}">Text</paper-button>
+      <paper-button raised on-tap="{{ addCode }}">Code</paper-button>
+      <paper-button raised on-tap="{{ addImage }}">Image</paper-button>
+      <paper-button raised on-tap="{{ del }}" hidden?="{{ !articleId }}">Delete</paper-button>
+      <paper-button raised on-tap="{{ submit }}">Submit</paper-button>
+    </section>
+  </template>
+  <script>
+    Polymer({
+      articleId: "",
+      catagory: "",
+      catagoryId: "",
+      articleTitle: "",
+      created: function(){
+        this.newArticle = {}
+      },
+      init: function(){
+        this.$.container.innerHTML = "";
+        this.articleId = "";
+        this.catagoryId = "";
+        this.catagory = "";
+        this.articleTitle = "";
+      },
+      addText: function(){
+        this.$.container.appendChild(new ArcaneText());
+      },
+      addCode: function(){
+        this.$.container.appendChild(new ArcaneCode());
+      },
+      addImage: function(){
+        this.$.container.appendChild(new ArcaneImage());
+      },
+      render: function(e){
+        this.$.container.innerHTML = "";
+        article = e.detail.response[0];
+        this.catagory = article.catagory;
+        this.catagoryId = article.catagoryId;
+        this.articleTitle = article.title;
+        contents = JSON.parse(article.content);
+        for(var i in contents){
+          if(contents[i].type == "text"){
+            var text = new ArcaneText();
+            text.value = contents[i].detail;
+            this.$.container.appendChild(text);
+          }else if(contents[i].type == "code"){
+            var code = new ArcaneCode();
+            code.value = contents[i].detail;
+            this.$.container.appendChild(code);
+          }else if(contents[i].type == "image"){
+            var image = new ArcaneImage();
+            image.value = contents[i].detail;
+            this.$.container.appendChild(image);
+          }
+        }
+      },
+      articleIdChanged: function(){
+        this.$.modifyAjax.go();
+      },
+      del: function(){
+        this.$.deleteArticleAjax.params = {'articleId': this.articleId};
+        this.$.deleteArticleAjax.go();
+        this.fire('admin-delete');
+      },
+      submit: function(){
+        if(this.catagory && this.articleTitle){
+          var arcanes = this.$.container.children;
+          var newArticle = {}
+          newArticle['catagory'] = {};
+          newArticle.catagory['name'] = this.catagory;
+          var contents = []
+          for(var i=0; i<arcanes.length; i++){
+            var content = {}
+            content['type'] = arcanes[i].type;
+            content['detail'] = arcanes[i].value;
+            contents.push(content);
+          }
+          newArticle.catagory['articles'] = []
+          article = {
+            'catagoryId': this.catagoryId,
+            'articleId': this.articleId,
+            'title': this.articleTitle,
+            'content': contents
+          }
+          newArticle.catagory.articles.push(article);
+
+          this.newArticle = {'newArticle': JSON.stringify(newArticle)};
+          this.$.saveAjax.go();
+          this.fire('admin-submit');
+        }
+      }
+    });
+  </script>
+</polymer-element>

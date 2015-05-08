@@ -1,0 +1,96 @@
+<link rel="import" href="../paper-dialog/paper-dialog.html"/>
+<link rel="import" href="../paper-dialog/paper-dialog-transition.html"/>
+<link href="../paper-dialog/paper-action-dialog.html" rel="import">
+<link href="../paper-input/paper-input.html" rel="import">
+<link href="../paper-input/paper-input-decorator.html" rel="import">
+<link href="../paper-input/paper-autogrow-textarea.html" rel="import">
+<link href="../core-localstorage/core-localstorage.html" rel="import">
+<link href="../core-media-query/core-media-query.html" rel="import">
+
+<polymer-element name="arcane-dialog" attributes="heading resourceId nick email content">
+	<template>
+		<style>
+      .article_reply_dialog_input {
+        left: 0px;
+        top: 0px;
+        position: absolute;
+        width: 100%;
+      }
+		</style>
+		<core-media-query query="max-width: 640px" queryMatches="{{ _isNarrow }}"></core-media-query>
+	  <core-localstorage name="nick" value="{{ nick }}"></core-localstorage>
+	  <core-localstorage name="email" value="{{ email }}"></core-localstorage>
+    <paper-action-dialog
+		    id="dialog"
+		    backdrop
+        autoCloseDisabled
+		    style="position: fixed; right: 0; bottom: 0; width: {{ _dialogWidth }}; margin: {{ _dialogMargin }};"
+		    class="article_reply_dialog"
+		    heading="Reply to {{ heading }}"
+		    transition="paper-dialog-transition-bottom"
+        on-core-overlay-close-completed="{{ _close }}"
+    >
+      <p>
+        <paper-input floatinglabel id="inputNick" required pattern="[a-z]+" maxlength="10" label="昵称" value="{{ nick }}" style="width: 100%;" error="hehe,这里只能输入小写字母"></paper-input>
+      </p>
+      <p>
+        <paper-input floatinglabel id="inputEmail" required type="email" label="E-mail" value="{{ email }}" style="width: 100%;" error="这个email格式也是醉了(如果没有后缀，默认处理为.com)"></paper-input>
+      </p>
+      <p>
+        <paper-input-decorator class="article_reply_dialog_input" label="reply...">
+          <paper-autogrow-textarea>
+            <textarea cols="30" rows="5" value="{{ content }}"></textarea>
+          </paper-autogrow-textarea>
+        </paper-input-decorator>
+      </p>
+      <paper-button class="dialog_button" style="color: rgb(46, 192, 165);" raised dismissive>不说了</paper-button>
+      <paper-button hidden?="{{ _isHidden }}" class="dialog_button" style="color: rgb(46, 192, 165);" raised on-tap="{{ _affirm }}" affirmative>就这么说</paper-button>
+    </paper-action-dialog>
+	</template>
+	<script>
+		Polymer({
+			observe: {
+				'$.inputNick.validity.valid': '_isValid',
+				'$.inputEmail.validity.valid': '_isValid'
+			},
+			_isValid: function () {
+				if(this.$.inputNick.validity.valid && this.$.inputEmail.validity.valid){
+					this._isHidden = false;
+				}else{
+					this._isHidden = true;
+				}
+			},
+			_isNarrow: false,
+			_dialogWidth: "450px",
+			_dialogMargin: "0 70px 30px 0",
+			_isNarrowChanged: function () {
+				if(this._isNarrow){
+					this._dialogWidth = "100%";
+					this._dialogMargin = "0 0 0 0";
+				}else{
+					this._dialogWidth = "450px";
+					this._dialogMargin = "0 70px 30px 0";
+				}
+			},
+			_affirm: function () {
+				var valid;
+				if(this.$.inputNick.validity.valid && this.$.inputEmail.validity.valid){
+					valid = true;
+				}else{
+					valid = false;
+				}
+				this.fire('dialog-affirm', {valid: valid, resourceId: this.resourceId, owner: this.heading, nick: this.nick, email: this.email, content: this.content});
+			},
+			_close: function () {
+				this.content = "";
+			},
+			resourceId: "",
+			nick: "",
+			email: "",
+			content: "",
+			toggle: function(){
+				this.$.dialog.toggle();
+			}
+		});
+	</script>
+</polymer-element>

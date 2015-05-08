@@ -1,0 +1,27 @@
+<x-meta id="arcane-container" label="Container" group="Arcane">
+	<template>
+		<arcane-container>
+			<arcane-search></arcane-search>
+			<arcane-catagory catagories='[
+	          {
+	            "name": "catagory1",
+	            "articles": [
+	                    "article1",
+	                    "article2"
+	                  ]
+	          },
+	          {
+	            "name": "catagory2",
+	            "articles": [
+	                    "article3"
+	                  ]
+	          }
+	        ]'></arcane-catagory>
+		</arcane-container>
+	</template>
+	<template id="imports">
+		<link rel="import" href="arcane-container.html">	
+		<link rel="import" href="../arcane-search/arcane-search.html">	
+		<link rel="import" href="../arcane-catagory/arcane-catagory.html">	
+	</template>
+</x-meta>
